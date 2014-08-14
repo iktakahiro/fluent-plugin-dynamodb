@@ -64,10 +64,10 @@ class DynamoDBOutput < Fluent::BufferedOutput
   end
 
   def valid_table(table_name)
-    table = @dynamo_db.tables[table_name]
-    table.load_schema
-    @hash_key = table.hash_key
-    @range_key = table.range_key unless table.simple_key?
+    @table = @dynamo_db.tables[table_name]
+    @table.load_schema
+    @hash_key = @table.hash_key
+    @range_key = @table.range_key unless @table.simple_key?
   end
 
   def match_type!(key, record)
@@ -99,25 +99,9 @@ class DynamoDBOutput < Fluent::BufferedOutput
   end
 
   def write(chunk)
-    batch_size = 0
-    batch_records = []
     chunk.msgpack_each {|record|
-      batch_records << record
-      batch_size += record.to_json.length # FIXME: heuristic
-      if batch_records.size >= BATCHWRITE_ITEM_LIMIT || batch_size >= BATCHWRITE_CONTENT_SIZE_LIMIT
-        batch_put_records(batch_records)
-        batch_records.clear
-        batch_size = 0
-      end
+      @table.items.create(record)
     }
-    unless batch_records.empty?
-      batch_put_records(batch_records)
-    end
-  end
-
-  def batch_put_records(records)
-    @batch.put(@dynamo_db_table, records)
-    @batch.process!
   end
 
 end
