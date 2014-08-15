@@ -32,6 +32,7 @@ Specify table name, hash attribute name and throughput as you like. fluent-plugi
  * **dynamo\_db\_endpoint (required)** - end point of dynamodb. see  [Regions and Endpoints](http://docs.amazonwebservices.com/general/latest/gr/rande.html#ddb_region)
  * **dynamo\_db\_table (required)** - table name of dynamodb.
  * **output\_include\_time (optional)** - When "time attribute" is not required, set false.
+ * **output\_include\_tag (optional)** - When "tag attribute" is not required, set false.
 
 
 ##TIPS
