@@ -26,6 +26,7 @@ class DynamoDBOutput < Fluent::BufferedOutput
   config_param :time_format, :string, :default => nil
   config_param :detach_process, :integer, :default => 2
   config_param :output_include_time, :bool, :default => true
+  config_param :output_include_tag, :bool, :default => true
 
   def configure(conf)
     super
@@ -103,6 +104,9 @@ class DynamoDBOutput < Fluent::BufferedOutput
     chunk.msgpack_each {|record|
       if @output_include_time == false then
           record.delete('time')
+      end
+      if @output_include_time == false then
+          record.delete('tag')
       end
       @table.items.create(record)
     }
